@@ -1,4 +1,4 @@
-function [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = trilinear_weights(x,y,z, x_grid, y_grid, z_grid, d_x, d_y, d_z, nParticle)
+function [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = trilinear_weights(x,y,z, x_grid, y_grid, z_grid, nParticle)
 % trilinear_weights    Indices and weights for trilinear interpolation
 %
 % trilinear_weights(x, y, z, xgrid, ygrid, zgrid, dx, dy, dz, nParticle)
@@ -13,7 +13,10 @@ function [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = trili
 %   w000, ..., w111     Weights to assign to function values
 %
 % TODO: Remove multi-particle functionality (separation of concerns)
-% TODO: Infer dx, dy, dz from x_grid, y_grid, z_grid (simplification)
+
+d_x = x_grid(2)-x_grid(1);
+d_y = y_grid(2)-y_grid(1);
+d_z = z_grid(2)-z_grid(1);
 
 % TODO: what does "log" mean in "log_vec"?
 log_vec = ((x >= x_grid(1)) & (x <= x_grid(end)) & (y >= y_grid(1)) & (y <= y_grid(end)) & (z >= z_grid(1)) & (z <= z_grid(end)));

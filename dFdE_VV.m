@@ -1,8 +1,10 @@
 %% Function VV
 
-function [dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV(x1_p, x2_p, x3_p, N, nParticle, t, x1_init, x2_init, x3_init, v1_init, v2_init, v3_init, E_x, E_y, E_z, m, q)
+function [dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV(...
+    x_grid, y_grid, z_grid, ...
+    x1_p, x2_p, x3_p, nParticle, t, x1_init, x2_init, x3_init, v1_init, v2_init, v3_init, E_x, E_y, E_z, m, q)
 %% Init
-[x_grid, y_grid, z_grid, d_x, d_y, d_z]     = Setup_Grid3D(N);
+%[x_grid, y_grid, z_grid, d_x, d_y, d_z]     = Setup_Grid3D(N);
 
 [id_x1, id_x2, id_x3, id_v1, id_v2, id_v3]  = get_Index3D(nParticle);
 
@@ -33,8 +35,7 @@ y_d = spline(t, x_v_fw(:,id_x2)', t);
 z_d = spline(t, x_v_fw(:,id_x3)', t);
 
 [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = ...
-    trilinear_weights(x_d' ,y_d' ,z_d', x_grid, y_grid, z_grid,...
-    d_x, d_y, d_z, nParticle);
+    trilinear_weights(x_d' ,y_d' ,z_d', x_grid, y_grid, z_grid, nParticle);
 
 %% Get the Value of Integrant
 %

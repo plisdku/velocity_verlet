@@ -1,16 +1,7 @@
 function [x_fw, S, x_v_fwold] = VV3D(q, m, t, delta_t, nParticle, interp_E_x, interp_E_y, interp_E_z, x1_init, x2_init, x3_init, v1_init, v2_init, v3_init)
 
-%delta_t = 0.25;
-%t = 0:delta_t:0.5;
-%nParticle = 5;
-%N = 11;
-
-%[x_grid, y_grid, z_grid, d_x, d_y, d_z]     = Setup_Grid3D(N);
-[x_v_init]                                  = Setup_Particle3D(...
-    x1_init,x2_init, x3_init, v1_init, v2_init, v3_init, nParticle);
-% [E_x, E_y, E_z]                             = Setup_Fields3DGrad(x_grid,...
-%     y_grid, z_grid, d_x, d_y, d_z, V);
-[id_x1, id_x2, id_x3, id_v1, id_v2, id_v3]  = get_Index3DVV(nParticle);
+[x_v_init] = Setup_Particle3D(x1_init,x2_init, x3_init, v1_init, v2_init, v3_init, nParticle);
+[id_x1, id_x2, id_x3, id_v1, id_v2, id_v3]  = get_Index3D(nParticle);
 
 
 % x_grid = linspace(-1,1,11);

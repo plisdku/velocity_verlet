@@ -8,12 +8,9 @@ function [dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV(...
 
 [id_x1, id_x2, id_x3, id_v1, id_v2, id_v3]  = get_Index3D(nParticle);
 
-interp_E_x = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_x, x, y, z,...
-    'linear', 0);
-interp_E_y = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_y, x, y, z,...
-    'linear', 0);
-interp_E_z = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_z, x, y, z,...
-    'linear', 0);
+interp_E_x = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_x, x, y, z, 'linear', 0);
+interp_E_y = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_y, x, y, z, 'linear', 0);
+interp_E_z = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_z, x, y, z, 'linear', 0);
 
 delta_t = t(2) - t(1);
 

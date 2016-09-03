@@ -11,9 +11,9 @@ y_grid = linspace(-1, 1, Ny);
 z_grid = linspace(-1, 1, Nz);
 
 V           = ones(Nx, Ny, Nz);
-E_x         = zeros(Nx, Ny, Nz);
-E_y         = E_x;
-E_z         = E_x;
+E_x         = -centeredDiff(V, 1);
+E_y         = -centeredDiff(V, 2);
+E_z         = -centeredDiff(V, 3);
 
 % "Boundary" in the time domain.
 D_T         = [0, 1];
@@ -26,26 +26,31 @@ x3_init     = 0*x1_init;% 0.2 -0.4 -0.5 -0.6];
 v1_init     = 0.2*ones(1,nParticle);% 0 0 0];
 v2_init     = 0*x1_init;% 0.3 0.4 0.4 0.5];
 v3_init     = v1_init;
+x_v_init = Setup_Particle3D(x1_init, x2_init, x3_init, ...
+    v1_init, v2_init, v3_init, nParticle);
 m           = 1;
 q           = 1;
 
 x1_p         = -1*ones(1,nParticle);
 x2_p         = 0*ones(1,nParticle);
 x3_p         = 0*ones(1,nParticle);
+objectiveFunction = @(x_v_fw) objectiveFunction_3D(x_v_fw, nParticle, x1_p, x2_p, x3_p);
 
 %%
-%[x_grid, y_grid, z_grid, d_x, d_y, d_z]     = Setup_Grid3D(N);
 
 [dF_dE_x_dt1, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV( ...
     x_grid, y_grid, z_grid, ...
-    x1_p, x2_p, x3_p, ...
+    objectiveFunction, ...
     nParticle, t, ...
-    x1_init, x2_init, x3_init, v1_init, v2_init, v3_init, ...
+    x_v_init, ...
     E_x, E_y, E_z, ...
     m, q);
 
+%%
+[ix,iy,iz,~,~,~] = get_Index3D(nParticle);
+
 figure(1); clf
-%plot(x_v_fw(
+plot(x_v_fw(:,ix), x_v_fw(:,iy), 'o-')
 
 %% Make sure the function runs
 % ... it doesn't.

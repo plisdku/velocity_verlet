@@ -2,7 +2,7 @@
 
 function [dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV(...
     x_grid, y_grid, z_grid, ...
-    x1_p, x2_p, x3_p, nParticle, t, x1_init, x2_init, x3_init, v1_init, v2_init, v3_init, E_x, E_y, E_z, m, q)
+    objectiveFunction, nParticle, t, x_v_init, E_x, E_y, E_z, m, q)
 %% Init
 %[x_grid, y_grid, z_grid, d_x, d_y, d_z]     = Setup_Grid3D(N);
 
@@ -17,16 +17,14 @@ interp_E_z = @(x, y, z) interpn(x_grid, y_grid, z_grid, E_z, x, y, z,...
 
 delta_t = t(2) - t(1);
 
-%% Sole Systems
+%% Solve Systems
 [x_v_fw, S] = VV3D(q, m, t, delta_t, nParticle, interp_E_x, ...
-    interp_E_y, interp_E_z, x1_init, x2_init, x3_init, v1_init,...
-    v2_init, v3_init);
+    interp_E_y, interp_E_z, x_v_init);
 
-[G, D_G] = objectiveFunction_3D(x_v_fw, nParticle, x1_p, x2_p, x3_p);
+[G, D_G] = objectiveFunction(x_v_fw);
+%[G, D_G] = objectiveFunction_3D(x_v_fw, nParticle, x1_p, x2_p, x3_p);
 
 [xd] = dualVV(nParticle, D_G, S, t);
-
-
 
 %% Interpolation in Time and Weight Recovery
 %

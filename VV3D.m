@@ -9,19 +9,6 @@ v2_fw = zeros(length(t),nParticle);
 x3_fw = zeros(length(t),nParticle);
 v3_fw = zeros(length(t),nParticle);
 
-% x10 = 0.5;
-% v10 = 0;
-% x20 = 0.5;
-% v20 = 0;
-% x30 = 0.5;
-% v30 = 0;
-% x1_fw(1,:) = x1_init;
-% v1_fw(1,:) = v1_init;
-% x2_fw(1,:) = x2_init;
-% v2_fw(1,:) = v2_init;
-% x3_fw(1,:) = x3_init;
-% v3_fw(1,:) = v3_init;
-
 x1_fw(1,:) = x_v_init(id_x1);
 v1_fw(1,:) = x_v_init(id_v1);
 x2_fw(1,:) = x_v_init(id_x2);
@@ -43,6 +30,8 @@ D_T = [t(1) t(end)];
 %         x_v_init, D_T, nParticle, q, m);
 
 % This is the implementation of the VV method.
+% It solves it to get x and v, and simultaneously builds a system matrix
+% which will be used later.
 for i = 2:length(t)
     
     a1_1 = (q/m)*interp_E_x(x1_fw(i-1,:), x2_fw(i-1,:), x2_fw(i-1,:));
@@ -71,11 +60,11 @@ for i = 2:length(t)
     f2 = [f2; 0.5*a2_1'*delta_t.^2; 0.5*(a2_1 + a2_2)'*delta_t];
     f3 = [f3; 0.5*a3_1'*delta_t.^2; 0.5*(a3_1 + a3_2)'*delta_t];
     
-    
-    
-    
 end
-initialState = [f1; f2; f3];
+rightHandSide = [f1; f2; f3];
+
+
+
 % 
 % figure()
 % hold on
@@ -167,7 +156,7 @@ v = [v1_1 v1_2 v1_3 v2_1 v2_2 v2_3 v3_1 v3_2 v3_3];
 S = sparse(i,j,v,m,n);
 
 % SOLVE IT
-x_vec = S\initialState;
+x_vec = S\rightHandSide;
 
 x_vec_split = reshape(x_vec, [2*length(t)*nParticle, 3]);
 

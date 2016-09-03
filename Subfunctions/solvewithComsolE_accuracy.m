@@ -114,7 +114,7 @@ y_d = spline(t_fw, x_v_fw(:,id_x2)', t_d);
 z_d = spline(t_fw, x_v_fw(:,id_x3)', t_d);
 
 [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = ...
-    bilinear_weights3D(x_d,y_d,z_d, x_grid, y_grid, z_grid, d_x, d_y, d_z, nParticle);
+    trilinear_weights(x_d,y_d,z_d, x_grid, y_grid, z_grid, d_x, d_y, d_z, nParticle);
 
 %% Get the Value of Integrant
 %

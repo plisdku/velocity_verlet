@@ -62,8 +62,6 @@ colorbar
 xlabel('x')
 ylabel('y')
 
-
-
 %%
 [ix,iy,iz,~,~,~] = get_Index3D(nParticle);
 
@@ -74,7 +72,7 @@ zs = x_v_fw(:,iz);
 myEx = interp_E_x(xs, ys, zs);
 myEy = interp_E_y(xs, ys, zs);
 
-figure(1); clf
+figure(2); clf
 plot(xs, ys, 'o-')
 xlim([-1,1])
 ylim([-1,1])

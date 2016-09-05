@@ -1,5 +1,4 @@
 %% Function VV
-
 function [dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV(...
     x_grid, y_grid, z_grid, ...
     objectiveFunction, nParticle, t, x_v_init, E_x, E_y, E_z, m, q)
@@ -19,7 +18,6 @@ delta_t = t(2) - t(1);
     interp_E_y, interp_E_z, x_v_init);
 
 [G, D_G] = objectiveFunction(x_v_fw);
-%[G, D_G] = objectiveFunction_3D(x_v_fw, nParticle, x1_p, x2_p, x3_p);
 
 [xd] = dualVV(nParticle, D_G, S, t);
 
@@ -29,10 +27,11 @@ x_d = spline(t, x_v_fw(:,id_x1)', t);
 y_d = spline(t, x_v_fw(:,id_x2)', t);
 z_d = spline(t, x_v_fw(:,id_x3)', t);
 
+assert(nParticle == 1); % we obtain trilinear weights only for one right now
 [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = ...
-    trilinear_weights(x_d' ,y_d' ,z_d', x_grid, y_grid, z_grid, nParticle);
+    trilinear_weights(x_d' ,y_d' ,z_d', x_grid, y_grid, z_grid);
 
-%% Get the Value of Integrant
+%% Get the Value of Integrand
 %
 d_t_s       = -centeredDiff(t)';
 dF_dE_x_t   = bsxfun(@times,d_t_s, xd(:,id_v1)*q/m);
@@ -43,12 +42,12 @@ dF_dE_z_t   = bsxfun(@times,d_t_s, xd(:,id_v3)*q/m);
 %
 [dF_dE_x_d]  = multipleRestriction3D(i_x, i_y, i_z,...
     w000, w100, w010,w110, w001, w101, w011, w111, ...
-    dF_dE_x_t, size(E_x,1), size(E_x,2), size(E_x,3), nParticle );
+    dF_dE_x_t, size(E_x,1), size(E_x,2), size(E_x,3) );
 [dF_dE_y_d]  = multipleRestriction3D(i_x, i_y, i_z,...
     w000, w100, w010,w110, w001, w101, w011, w111, ...
-    dF_dE_y_t, size(E_x,1), size(E_x,2), size(E_x,3), nParticle );
+    dF_dE_y_t, size(E_x,1), size(E_x,2), size(E_x,3) );
 [dF_dE_z_d]  = multipleRestriction3D(i_x, i_y, i_z,...
     w000, w100, w010,w110, w001, w101, w011, w111, ...
-    dF_dE_z_t, size(E_x,1), size(E_x,2), size(E_x,3), nParticle );
+    dF_dE_z_t, size(E_x,1), size(E_x,2), size(E_x,3) );
 
 end

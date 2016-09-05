@@ -10,8 +10,9 @@ x_grid = linspace(-1, 1, Nx);
 y_grid = linspace(-1, 1, Ny);
 z_grid = linspace(-1, 1, Nz);
 
-V           = ones(Nx, Ny, Nz);
-V           = 3*randn(Nx, Ny, Nz);
+%V           = ones(Nx, Ny, Nz);
+%V           = 3*randn(Nx, Ny, Nz);
+V           = repmat(peaks(Nx), [1 1 2]); assert(Nx == Ny);
 V(:,:,2) = V(:,:,1);
 E_x         = -centeredDiff(V, 1);
 E_y         = -centeredDiff(V, 2);

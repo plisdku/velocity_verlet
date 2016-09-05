@@ -45,13 +45,24 @@ objectiveFunction = @(x_v_fw) objectiveFunction_3D(x_v_fw, nParticle, x1_p, x2_p
 
 %%
 
-[dF_dE_x_dt1, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV( ...
+[dF_dE_x_d, dF_dE_y_d, dF_dE_z_d, G, D_G, x_v_fw] = dFdE_VV( ...
     x_grid, y_grid, z_grid, ...
     objectiveFunction, ...
     nParticle, t, ...
     x_v_init, ...
     E_x, E_y, E_z, ...
     m, q);
+
+%% Plot the E-field sensitivities...
+
+figure(1); clf
+imagesc(x_grid, y_grid, dF_dE_x_d(:,:,1)');
+axis xy image
+colorbar
+xlabel('x')
+ylabel('y')
+
+
 
 %%
 [ix,iy,iz,~,~,~] = get_Index3D(nParticle);
@@ -70,6 +81,10 @@ ylim([-1,1])
 %axis xy image
 hold on
 quiver(xs, ys, myEx, myEy)
+xlabel('x')
+ylabel('y')
+title('Trajectory through random voltage')
+legend('Particle', 'E-field')
 
 %figure(2); clf
 %plot3(xs, ys, zs, 'o-')

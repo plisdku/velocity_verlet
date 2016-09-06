@@ -6,26 +6,26 @@
 
 checkClose = @(a, b) assert(norm(a-b) < 1e-6);
 
-Nt = 10;
-ts = linspace(0, 1, Nt+1);
+Nt = 11;
+ts = linspace(0, 1, Nt);
 
-[systemMatrix, initMatrix, accelMatrix, i_x, i_v, i_a] = velocityVerletMatrices(ts);
+[systemMatrix, initMatrix, accelMatrix, ix, iv, ia] = velocityVerletMatrices(ts);
 
 dt = ts(2)-ts(1);
 
 %% Test case: initial velocity
 
-acceleration = zeros(Nt+1, 1);
+acceleration = zeros(Nt, 1);
 xv0 = [0; 1];
 
 xv = systemMatrix \ (-initMatrix*xv0 - accelMatrix*acceleration);
-xs = xv(i_x(1:Nt));
-vs = xv(i_v(1:Nt));
+xs = xv(ix);
+vs = xv(iv);
 
 %figure(1); clf
-%plot(ts(2:end), xs, 'o-');
+%plot(ts, xs, 'o-');
 %hold on
-%plot(ts(2:end), vs, 'rx');
+%plot(ts, vs, 'rx');
 
 checkClose(vs(end), 1.0);
 checkClose(xs(end), 1.0);
@@ -33,12 +33,12 @@ disp('Initial velocity test PASSED');
 
 %% Test case: constant acceleration
 
-acceleration = ones(Nt+1, 1);
+acceleration = ones(Nt, 1);
 xv0 = [0; 0];
 
 xv = systemMatrix \ (-initMatrix*xv0 - accelMatrix*acceleration);
-xs = xv(i_x(1:Nt));
-vs = xv(i_v(1:Nt));
+xs = xv(ix);
+vs = xv(iv);
 
 %figure(1); clf
 %plot(ts(2:end), xs, 'o-');
@@ -55,8 +55,8 @@ accelFunc = @(t, x) 0.0;
 xv0 = [0; 1];
 
 [xv, ~, ~] = velocityVerlet1D(ts, xv0, accelFunc);
-xs = xv(1:Nt+1);
-vs = xv(Nt+2:end);
+xs = xv(ix);
+vs = xv(iv);
 
 % figure(1); clf
 % plot(ts(2:end), xs, 'o-');
@@ -73,8 +73,8 @@ accelFunc = @(t, x) 1.0;
 xv0 = [0; 0];
 
 [xv, ix, iv] = velocityVerlet1D(ts, xv0, accelFunc);
-xs = xv(1:Nt+1);
-vs = xv(Nt+2:end);
+xs = xv(ix);
+vs = xv(iv);
 
 % figure(1); clf
 % plot(ts(2:end), xs, 'o-');
@@ -96,7 +96,7 @@ xs = xv(ix);
 vs = xv(iv);
 
 [G, DG] = finalDistanceObjective(1.0, xv);
-DG = DG([ix(2:end), iv(2:end)]); % scrape off the ICs
+%DG = DG([ix(2:end), iv(2:end)]); % scrape off the ICs
 
 % Test a few dual sensitivities: an acceleration and the initial conds.
 delta = 1e-9;
@@ -127,7 +127,7 @@ checkClose(dGdx0, dGdv0_meas);
 
 % Sensitivity to a(5):
 
-Da = zeros(Nt+1, 1);
+Da = zeros(Nt, 1);
 Da(5) = 1.0;
 dGda = xv_dual' * (-accelMatrix * Da);
 

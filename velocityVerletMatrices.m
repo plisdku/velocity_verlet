@@ -17,7 +17,7 @@ function [systemMatrix, A0, B, i_x, i_v, i_a] = velocityVerletMatrices(ts)
 %   v(n) = xv(i_v(n))
 %
 
-Nt = length(ts)-1;
+Nt = length(ts);
 dt = ts(2) - ts(1);
 
 %% A single timestep:
@@ -39,7 +39,7 @@ dt = ts(2) - ts(1);
 %i_a = @(timestep) timestep;
 i_x = 1:Nt;
 i_v = i_x + Nt;
-i_a = 1:Nt+1;
+i_a = 1:Nt;
 
 %% System matrix for 1D system
 % We probably won't need to turn it into a matrix for a 3D system, but we
@@ -48,16 +48,15 @@ i_a = 1:Nt+1;
 % The system matrix updates timestep 0 to timestep 1, and so on, finally
 % reaching timestep Nt.  The initial conditions are part of the right-hand
 % side along with the driving forces at timesteps 0 through Nt.  NOTE that
-% there are Nt+1 accelerations.
-
-% ------- A
-% A = [1, dt; 0, 1]
+% there are Nt accelerations.
 
 unos = @(n) ones(1,n);
 
-ii_A = [i_x(2:Nt), i_x(2:Nt), i_v(2:Nt)];
-jj_A = [i_x(1:Nt-1), i_v(1:Nt-1), i_v(1:Nt-1)];
-vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
+
+% [x(n+1); v(n+1)] = A*[x(n); v(n)] + B*[a(n); a(n+1)]
+%
+% A = [1, dt; 0, 1]
+% B = [0.5*dt^2, 0; 0.5*dt, 0.5*dt]
 
 % ------- Diagonal
 % It's a big old identity matrix.
@@ -65,6 +64,13 @@ vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
 ii_diag = [i_x(1:Nt), i_v(1:Nt)];
 jj_diag = [i_x(1:Nt), i_v(1:Nt)];
 vv_diag = [-unos(Nt), -unos(Nt)];
+
+% ------- A
+% A = [1, dt; 0, 1]
+
+ii_A = [i_x(2:Nt), i_x(2:Nt), i_v(2:Nt)];
+jj_A = [i_x(1:Nt-1), i_v(1:Nt-1), i_v(1:Nt-1)];
+vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
 
 % ------- Build the system matrix!
 
@@ -82,12 +88,12 @@ systemMatrix = sparse([ii_A, ii_diag], [jj_A, jj_diag], [vv_A, vv_diag],...
 % The B matrix is 2*Nt x Nt+1.  Yeah it's weird-shaped.  It turns Nt+1
 % accelerations into Nt timestep updates.
 
-ii_B = [i_x(1:Nt), i_v(1:Nt), i_v(1:Nt)];
-jj_B = [i_a(1:Nt), i_a(1:Nt), i_a(2:Nt+1)];
-vv_B = [0.5*dt*dt*unos(Nt), 0.5*dt*unos(Nt), 0.5*dt*unos(Nt)];
+ii_B = [i_x(2:Nt), i_v(2:Nt), i_v(2:Nt)];
+jj_B = [i_a(1:Nt-1), i_a(1:Nt-1), i_a(2:Nt)];
+vv_B = [0.5*dt*dt*unos(Nt-1), 0.5*dt*unos(Nt-1), 0.5*dt*unos(Nt-1)];
 
 numRows = 2*Nt;
-numCols = Nt+1;
+numCols = Nt;
 B = sparse(ii_B, jj_B, vv_B, numRows, numCols);
 %figure(3); clf
 %imagesc(B)
@@ -102,9 +108,9 @@ numRows = 2*Nt;
 numCols = 2;
 
 % A = [1, dt; 0, 1]
-ii_A0 = [i_x(1), i_x(1), i_v(1)];
-jj_A0 = [1, 2, 2];
-vv_A0 = [1, dt, 1];
+ii_A0 = [i_x(1), i_v(1)];
+jj_A0 = [1, 2];
+vv_A0 = [1, 1];
 
 A0 = sparse(ii_A0, jj_A0, vv_A0, numRows, numCols);
 

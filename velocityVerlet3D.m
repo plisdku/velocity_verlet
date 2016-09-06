@@ -1,4 +1,4 @@
-function [xv, accelerations, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = velocityVerlet3D(ts, xv0, accelFunc)
+function [xv, accelerations] = velocityVerlet3D(ts, xv0, accelFunc)
 % velocityVerlet3D     Calculate trajectory with driving force
 %
 % [xv, accel, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = velocityVerlet3D(ts, xv0, accelFunc)
@@ -17,16 +17,16 @@ function [xv, accelerations, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = velocityVerle
 % (PCH uses it to compare values from accelFunc with trilinear
 % interpolation done "by hand".)
 
-Nt = length(ts) - 1;
+Nt = length(ts);
 dt = ts(2) - ts(1);
 
 % System state: position and velocity
-xs = zeros(Nt+1, 3);
-vs = zeros(Nt+1, 3);
+xs = zeros(Nt, 3);
+vs = zeros(Nt, 3);
 xs(1,1:3) = xv0(1:3);
 vs(1,1:3) = xv0(4:6);
 
-accelerations = zeros(Nt+1, 3);
+accelerations = zeros(Nt, 3);
 
 currentAcceleration = accelFunc(ts(1), xs(1,1:3));
 assert(isequal(size(currentAcceleration), [3, 1]));
@@ -34,7 +34,7 @@ assert(isequal(size(currentAcceleration), [3, 1]));
 accelerations(1,1:3) = currentAcceleration;
 
 % Integrate!
-for nn = 1:Nt
+for nn = 1:Nt-1
     
     xs(nn+1,:) = xs(nn,:) + vs(nn,:)*dt + 0.5*dt*dt*currentAcceleration';
     nextAcceleration = accelFunc(ts(nn+1), xs(nn+1,:));
@@ -47,13 +47,6 @@ end
 xv = [xs(:,1); xs(:,2); xs(:,3);
     vs(:,1); vs(:,2); vs(:,3)];
 
-nn = 1:Nt+1;
-ix_x = nn;
-ix_y = ix_x + Nt + 1;
-ix_z = ix_y + Nt + 1;
-iv_x = ix_z + Nt + 1;
-iv_y = iv_x + Nt + 1;
-iv_z = iv_y + Nt + 1;
 
 
 

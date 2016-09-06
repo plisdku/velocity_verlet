@@ -2,27 +2,25 @@
 
 checkClose = @(a, b) assert(norm(a-b) < 1e-6);
 
-Nt = 10;
-ts = linspace(0, 1, Nt+1);
+Nt = 11;
+ts = linspace(0, 1, Nt);
 
-[systemMatrix, initMatrix, accelMatrix,...
-    ix_x, ix_y, ix_z, ...
-    iv_x, iv_y, iv_z, ...
-    ia_x, ia_y, ia_z] = velocityVerletMatrices3D(ts);
+[systemMatrix, initMatrix, accelMatrix] = velocityVerletMatrices3D(ts);
+[ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = get_Index3D(Nt);
 
 dt = ts(2)-ts(1);
 
 %% Test case: initial velocity
 
-acceleration = zeros(3*(Nt+1), 1);
+acceleration = zeros(3*Nt, 1);
 xv0 = [0; 0; 0; 1; 2; 3];
 
 xv = systemMatrix \ (-initMatrix*xv0 - accelMatrix*acceleration);
 
 % figure(1); clf
-% plot(ts(2:end), xv(ix_x), 'o-');
+% plot(ts, xv(ix_x), 'o-');
 % hold on
-% plot(ts(2:end), xv(iv_x), 'rx');
+% plot(ts, xv(iv_x), 'rx');
 
 checkClose(xv(iv_x(end)), 1.0);
 checkClose(xv(iv_y(end)), 2.0);
@@ -34,7 +32,7 @@ disp('Initial velocity test PASSED');
 
 %% Test case: constant acceleration
 
-unos = ones(Nt+1,1);
+unos = ones(Nt,1);
 acceleration = [unos; 2*unos; 3*unos];
 
 xv0 = [0; 0; 0; 0; 0; 0];
@@ -59,7 +57,7 @@ disp('Constant acceleration test PASSED');
 accelFunc = @(t, x) [0; 0; 0];
 xv0 = [0; 0; 0; 1; 2; 3];
 
-[xv, ~, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = velocityVerlet3D(ts, xv0, accelFunc);
+[xv] = velocityVerlet3D(ts, xv0, accelFunc);
 
 % figure(1); clf
 % plot(ts(2:end), xv(i_x1(1:Nt)), 'o-');
@@ -79,7 +77,7 @@ disp('Initial velocity with solver test PASSED');
 accelFunc = @(t, x) [1.0; 2.0; 3.0];
 xv0 = [0; 0; 0; 0; 0; 0];
 
-[xv, ~, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = velocityVerlet3D(ts, xv0, accelFunc);
+[xv, ~] = velocityVerlet3D(ts, xv0, accelFunc);
 
 % figure(1); clf
 % plot(ts(2:end), xv(i_x1(1:Nt)), 'o-');

@@ -1,9 +1,7 @@
-function [systemMatrix, A0, B, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z, ia_x, ia_y, ia_z] = ...
-    velocityVerletMatrices3D(ts)
+function [systemMatrix, A0, B] = velocityVerletMatrices3D(ts)
 % velocityVerletMatrices3D    Matrices and indexing for 3D velocity Verlet method
 %
-% systemMatrix, A0, B, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z, ia_x, ia_y, ia_z
-%       = velocityVerletMatrices3D(ts)
+% systemMatrix, A0, B = velocityVerletMatrices3D(ts)
 %
 % Let xv be the position and velocity vector we seek.  Then
 %
@@ -20,33 +18,20 @@ function [systemMatrix, A0, B, ix_x, ix_y, ix_z, iv_x, iv_y, iv_z, ia_x, ia_y, i
 %
 
 %% Establish an indexing convention
-Nt = length(ts)-1;
+Nt = length(ts);
 dt = ts(2) - ts(1);
 
-ix_x = 1:Nt;
-ix_y = ix_x + Nt;
-ix_z = ix_y + Nt;
+[ix_x, ix_y, ix_z, iv_x, iv_y, iv_z] = get_Index3D(Nt);
 
-iv_x = ix_z + Nt;
-iv_y = iv_x + Nt;
-iv_z = iv_y + Nt;
-
-ia_x = 1:Nt+1;
-ia_y = ia_x + Nt + 1;
-ia_z = ia_y + Nt + 1;
+ia_x = ix_x;
+ia_y = ix_y;
+ia_z = ix_z;
 
 %% System matrix for 1D (x) system
 % We'll turn it into the 3D matrix eventually.
 % Look at velocityVerletMatrices1D for explanation...
 
-% ------- A
-% A = [1, dt; 0, 1]
-
 unos = @(n) ones(1,n);
-
-ii_A = [ix_x(2:Nt), ix_x(2:Nt), iv_x(2:Nt)];
-jj_A = [ix_x(1:Nt-1), iv_x(1:Nt-1), iv_x(1:Nt-1)];
-vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
 
 % ------- Diagonal
 % It's a big old identity matrix.
@@ -54,6 +39,15 @@ vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
 ii_diag = [ix_x(1:Nt), iv_x(1:Nt)];
 jj_diag = [ix_x(1:Nt), iv_x(1:Nt)];
 vv_diag = [-unos(Nt), -unos(Nt)];
+
+% ------- A
+% A = [1, dt; 0, 1]
+
+
+ii_A = [ix_x(2:Nt), ix_x(2:Nt), iv_x(2:Nt)];
+jj_A = [ix_x(1:Nt-1), iv_x(1:Nt-1), iv_x(1:Nt-1)];
+vv_A = [unos(Nt-1), dt*unos(Nt-1), unos(Nt-1)];
+
 
 % ------- Build the system matrix!
 
@@ -75,14 +69,14 @@ systemMatrix = sparse(...
 % The B matrix is 2*Nt x Nt+1.  Yeah it's weird-shaped.  It turns Nt+1
 % accelerations into Nt timestep updates.
 
-ii_B = [ix_x(1:Nt), iv_x(1:Nt), iv_x(1:Nt)];
-jj_B = [ia_x(1:Nt), ia_x(1:Nt), ia_x(2:Nt+1)];
-vv_B = [0.5*dt*dt*unos(Nt), 0.5*dt*unos(Nt), 0.5*dt*unos(Nt)];
+ii_B = [ix_x(2:Nt), iv_x(2:Nt), iv_x(2:Nt)];
+jj_B = [ia_x(1:Nt-1), ia_x(1:Nt-1), ia_x(2:Nt)];
+vv_B = [0.5*dt*dt*unos(Nt-1), 0.5*dt*unos(Nt-1), 0.5*dt*unos(Nt-1)];
 
 numRows = 6*Nt;
-numCols = 3*(Nt+1);
+numCols = 3*Nt;
 B = sparse([ii_B, ii_B+Nt, ii_B+2*Nt],...
-    [jj_B, jj_B+Nt+1, jj_B+2*(Nt+1)], ...
+    [jj_B, jj_B+Nt, jj_B+2*Nt], ...
     [vv_B, vv_B, vv_B], numRows, numCols);
 %figure(3); clf
 %imagesc(B)
@@ -97,9 +91,9 @@ numRows = 6*Nt;
 numCols = 6;
 
 % A = [1, dt; 0, 1]
-ii_A0 = [ix_x(1), ix_x(1), iv_x(1)];
-jj_A0 = [1, 4, 4];
-vv_A0 = [1, dt, 1];
+ii_A0 = [ix_x(1), iv_x(1)];
+jj_A0 = [1, 4];
+vv_A0 = [1, 1];
 
 A0 = sparse([ii_A0, ii_A0+Nt, ii_A0+2*Nt], ...
     [jj_A0, jj_A0+1, jj_A0+2], ...

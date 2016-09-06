@@ -29,8 +29,10 @@ assert(all(w110 == [0 0 0 0 0.125]))
 assert(all(w111 == [0 0 0 0 0.125]))
 assert(all(w111 == [0 0 0 0 0.125]))
 
+disp('Single box tests PASSED');
+
 %% Eight boxes
-% Pay attention.  :-)
+% Pay attention.  :-)  I test weird edge cases in here.
 
 xgrid = [0, 0.5, 1];
 ygrid = [0, 0.5, 1];
@@ -61,3 +63,5 @@ assert(all(w101 == [0 0 0 0 0.125]))
 assert(all(w110 == [0 0 0 0 0.125]))
 assert(all(w111 == [0 0 0 0 0.125]))
 assert(all(w111 == [0 0 0 0 0.125]))
+
+disp('Eight-box tests PASSED');

@@ -12,7 +12,6 @@ function [i_x, i_y, i_z, w000, w100, w010, w110, w001, w101, w011, w111] = trili
 %   i_x, i_y, i_z       Indices to evaluate function at
 %   w000, ..., w111     Weights to assign to function values
 
-
 assert(isvector(x))
 assert(isvector(y))
 assert(isvector(z))

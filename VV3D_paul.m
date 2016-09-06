@@ -22,10 +22,10 @@ xv = systemMatrix \ (-initMatrix*xv0 - accelMatrix*acceleration);
 xs = xv(i_x(1:Nt));
 vs = xv(i_v(1:Nt));
 
-%figure(1); clf
-%plot(ts(2:end), xs, 'o-');
-%hold on
-%plot(ts(2:end), vs, 'rx');
+% figure(1); clf
+% plot(ts(2:end), xs, 'o-');
+% hold on
+% plot(ts(2:end), vs, 'rx');
 
 checkClose(vs(end), 1.0);
 checkClose(xs(end), 1.0);
@@ -40,10 +40,10 @@ xv = systemMatrix \ (-initMatrix*xv0 - accelMatrix*acceleration);
 xs = xv(i_x(1:Nt));
 vs = xv(i_v(1:Nt));
 
-%figure(1); clf
-%plot(ts(2:end), xs, 'o-');
-%hold on
-%plot(ts(2:end), vs, 'rx');
+% figure(1); clf
+% plot(ts(2:end), xs, 'o-');
+% hold on
+% plot(ts(2:end), vs, 'rx');
 
 checkClose(xs(end), 0.5);
 checkClose(vs(end), 1.0);
@@ -55,8 +55,8 @@ accelFunc = @(t, x) 0.0;
 xv0 = [0; 1];
 
 [xv, ~, ~] = velocityVerlet1D(ts, xv0, accelFunc);
-xs = xv(1:Nt+1);
-vs = xv(Nt+2:end);
+xs = xv(1:Nt);
+vs = xv(Nt+1:end);
 
 % figure(1); clf
 % plot(ts(2:end), xs, 'o-');
@@ -72,9 +72,9 @@ disp('Initial velocity with solver test PASSED');
 accelFunc = @(t, x) 1.0;
 xv0 = [0; 0];
 
-[xv, ix, iv] = velocityVerlet1D(ts, xv0, accelFunc);
-xs = xv(1:Nt+1);
-vs = xv(Nt+2:end);
+[xv, ~, ~] = velocityVerlet1D(ts, xv0, accelFunc);
+xs = xv(1:Nt);
+vs = xv(Nt+1:end);
 
 % figure(1); clf
 % plot(ts(2:end), xs, 'o-');
@@ -91,12 +91,11 @@ disp('Constant acceleration with solver test PASSED');
 accelFunc = @(t, x) 1.0;
 xv0 = [0; 0];
 
-[xv, ix, iv] = velocityVerlet1D(ts, xv0, accelFunc);
-xs = xv(ix);
-vs = xv(iv);
+[xv, ~, ~] = velocityVerlet1D(ts, xv0, accelFunc);
+xs = xv(1:Nt);
+vs = xv(Nt+1:end);
 
 [G, DG] = finalDistanceObjective(1.0, xv);
-DG = DG([ix(2:end), iv(2:end)]); % scrape off the ICs
 
 % Test a few dual sensitivities: an acceleration and the initial conds.
 delta = 1e-9;

@@ -31,7 +31,7 @@ for nn = 1:Nt
     
 end
 
-xv = [xs(2:end); vs(2:end)];
-i_x = @(nn) nn;
-i_v = @(nn) nn + Nt;
+xv = [xs; vs];
+i_x = 1:Nt+1;
+i_v = i_x + Nt + 1;
 

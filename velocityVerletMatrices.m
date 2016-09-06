@@ -1,5 +1,5 @@
 function [systemMatrix, A0, B, i_x, i_v, i_a] = velocityVerletMatrices(ts)
-% velocityVerlet1D     Matrices and indexing for 1D velocity Verlet method
+% velocityVerletMatrices     Matrices and indexing for 1D velocity Verlet method
 %
 % systemMatrix, initialMatrix, accelMatrix, i_x, i_v, i_a] = velocityVerlet1D(ts)
 %
@@ -34,9 +34,12 @@ dt = ts(2) - ts(1);
 % ever build the full system matrix for x, y and z.
 
 % Indexing functions
-i_x = @(timestep) timestep;
-i_v = @(timestep) timestep + Nt;
-i_a = @(timestep) timestep;
+%i_x = @(timestep) timestep;
+%i_v = @(timestep) timestep + Nt;
+%i_a = @(timestep) timestep;
+i_x = 1:Nt;
+i_v = i_x + Nt;
+i_a = 1:Nt+1;
 
 %% System matrix for 1D system
 % We probably won't need to turn it into a matrix for a 3D system, but we
